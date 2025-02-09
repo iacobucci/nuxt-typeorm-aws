@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Deploy Nuxt app on EC2 via LocalStack"
+
+Resources:
+  NuxtSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allow HTTP access for Nuxt"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+
+  NuxtInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: "ami-12345678"  # Sostituiscila con un'AMI di test per LocalStack
+      InstanceType: "t2.micro"
+      SecurityGroups:
+        - Ref: NuxtSecurityGroup
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+          apt-get install -y nodejs git
+          git clone https://github.com/tuo-repo/nuxt-app.git /home/ubuntu/nuxt-app
+          cd /home/ubuntu/nuxt-app
+          npm install
+          npm run start
+      Tags:
+        - Key: Name
+          Value: NuxtServer
+
+Outputs:
+  InstancePublicIp:
+    Description: "Public IP of Nuxt Server"
+    Value: !GetAtt NuxtInstance.PublicIp
