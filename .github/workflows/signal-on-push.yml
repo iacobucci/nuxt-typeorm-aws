@@ -11,14 +11,13 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up OIDC for AWS
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
         aws-region: eu-central-1
-        role-session-name: GitHubActionSession
 
     - name: Send message to SQS
       run: |
