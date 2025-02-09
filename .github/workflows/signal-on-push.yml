@@ -25,5 +25,4 @@ jobs:
 
     - name: Send message to SQS
       run: |
-        aws sqs send-message \
-          --queue-url https://sqs.eu-central-1.amazonaws.com/314146309237/queue.fifo --message-body "Push!"
+        aws sqs send-message --queue-url https://sqs.eu-central-1.amazonaws.com/314146309237/queue.fifo --message-group-id 1 --message-deduplication-id 1 --message-body "Push on branch ${{ github.ref }}"
