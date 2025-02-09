@@ -1,0 +1,26 @@
+name: AWS Signal on Push
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  send_signal:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up OIDC for AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: eu-central-1
+        role-session-name: GitHubActionSession
+
+    - name: Send message to SQS
+      run: |
+        aws sqs send-message \
+          --queue-url https://sqs.eu-central-1.amazonaws.com/314146309237/queue.fifo --message-body "Push!"
